@@ -353,7 +353,7 @@ export default function ComingSoonPage() {
             {faqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
-                <div key={index} className={`faq-item ${isOpen ? 'active' : ''} scroll-reveal stagger-${(index % 4) + 1}`} id={`faq-item-${index}`}>
+                <div key={index} className={`faq-item ${isOpen ? 'active' : ''}`} id={`faq-item-${index}`}>
                   <button
                     type="button"
                     className="faq-trigger"
@@ -389,14 +389,14 @@ export default function ComingSoonPage() {
         {/* Pre-Footer Inquiry Form */}
         <section className="inquiry-section" id="inquiry-section">
           <div className="inquiry-grid">
-            <div className="inquiry-left scroll-reveal stagger-1">
+            <div className="inquiry-left">
               <h2 className="inquiry-title">Ready To Safeguard What Matters?</h2>
               <p className="inquiry-desc">
                 Our service is for people who believe in owning a safe, clean, and organized space for life&apos;s essential records. Reach out and our team will help you prepare for tomorrow.
               </p>
             </div>
 
-            <div className="inquiry-right scroll-reveal stagger-2">
+            <div className="inquiry-right">
               {!inquirySubmitted ? (
                 <form className="inquiry-form" onSubmit={handleInquirySubmit} id="inquiry-form">
                   <div className="inquiry-row-split">
