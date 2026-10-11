@@ -118,6 +118,32 @@ export default function ComingSoonPage() {
     }, 600);
   };
 
+  // Scroll reveal animation observer for sections and cards
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '0px 0px 100px 0px' }
+    );
+
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => {
+      observer.observe(el);
+      // Immediately reveal elements that are already in or near the viewport
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 100) {
+        el.classList.add('is-revealed');
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -247,14 +273,14 @@ export default function ComingSoonPage() {
         </section>
 
         {/* Plain English Features Section */}
-        <section className="pillars-section anim-fade-up-4" id="pillars-section">
-          <div className="section-header">
+        <section className="pillars-section" id="pillars-section">
+          <div className="section-header scroll-reveal">
             <span className="section-tag">Key Features</span>
             <h2 className="section-title">Built for lifetime clarity and verified legacy handover.</h2>
           </div>
 
           <div className="pillars-grid">
-            <div className="pillar-card" id="pillar-vault">
+            <div className="pillar-card scroll-reveal stagger-1" id="pillar-vault">
               <div className="pillar-icon-box" aria-hidden="true">
                 <FileText size={20} strokeWidth={2.2} />
               </div>
@@ -264,7 +290,7 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            <div className="pillar-card" id="pillar-executors">
+            <div className="pillar-card scroll-reveal stagger-2" id="pillar-executors">
               <div className="pillar-icon-box" aria-hidden="true">
                 <Users size={20} strokeWidth={2.2} />
               </div>
@@ -274,7 +300,7 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            <div className="pillar-card" id="pillar-scanner">
+            <div className="pillar-card scroll-reveal stagger-3" id="pillar-scanner">
               <div className="pillar-icon-box" aria-hidden="true">
                 <ScanLine size={20} strokeWidth={2.2} />
               </div>
@@ -284,7 +310,7 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            <div className="pillar-card" id="pillar-audit">
+            <div className="pillar-card scroll-reveal stagger-4" id="pillar-audit">
               <div className="pillar-icon-box" aria-hidden="true">
                 <Hourglass size={20} strokeWidth={2.2} />
               </div>
@@ -294,7 +320,7 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            <div className="pillar-card" id="pillar-subscriptions">
+            <div className="pillar-card scroll-reveal stagger-5" id="pillar-subscriptions">
               <div className="pillar-icon-box" aria-hidden="true">
                 <BellRing size={20} strokeWidth={2.2} />
               </div>
@@ -304,7 +330,7 @@ export default function ComingSoonPage() {
               </p>
             </div>
 
-            <div className="pillar-card" id="pillar-security">
+            <div className="pillar-card scroll-reveal stagger-6" id="pillar-security">
               <div className="pillar-icon-box" aria-hidden="true">
                 <ShieldCheck size={20} strokeWidth={2.2} />
               </div>
@@ -317,8 +343,8 @@ export default function ComingSoonPage() {
         </section>
 
         {/* Minimal FAQ Section */}
-        <section className="faq-section anim-fade-up-5" id="faq-section">
-          <div className="section-header">
+        <section className="faq-section" id="faq-section">
+          <div className="section-header scroll-reveal">
             <span className="section-tag">Common Questions</span>
             <h2 className="section-title">Frequently Asked Questions</h2>
           </div>
@@ -327,13 +353,13 @@ export default function ComingSoonPage() {
             {faqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
-                <div key={index} className="faq-item" id={`faq-item-${index}`}>
+                <div key={index} className={`faq-item ${isOpen ? 'active' : ''} scroll-reveal stagger-${(index % 4) + 1}`} id={`faq-item-${index}`}>
                   <button
                     type="button"
                     className="faq-trigger"
                     onClick={() => setOpenFaqIndex(isOpen ? null : index)}
                     aria-expanded={isOpen}
-                    aria-controls={`faq-answer-${index}`}
+                    aria-controls={`faq-answer-wrapper-${index}`}
                     id={`faq-trigger-${index}`}
                   >
                     <span>{faq.q}</span>
@@ -342,16 +368,18 @@ export default function ComingSoonPage() {
                       className={`faq-icon ${isOpen ? 'open' : ''}`}
                     />
                   </button>
-                  {isOpen && (
-                    <div
-                      id={`faq-answer-${index}`}
-                      className="faq-answer"
-                      role="region"
-                      aria-labelledby={`faq-trigger-${index}`}
-                    >
-                      {faq.a}
+                  <div
+                    id={`faq-answer-wrapper-${index}`}
+                    className={`faq-collapse-wrapper ${isOpen ? 'open' : ''}`}
+                    role="region"
+                    aria-labelledby={`faq-trigger-${index}`}
+                  >
+                    <div className="faq-collapse-inner">
+                      <div className="faq-answer">
+                        {faq.a}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
@@ -361,14 +389,14 @@ export default function ComingSoonPage() {
         {/* Pre-Footer Inquiry Form */}
         <section className="inquiry-section" id="inquiry-section">
           <div className="inquiry-grid">
-            <div className="inquiry-left">
+            <div className="inquiry-left scroll-reveal stagger-1">
               <h2 className="inquiry-title">Ready To Safeguard What Matters?</h2>
               <p className="inquiry-desc">
                 Our service is for people who believe in owning a safe, clean, and organized space for life&apos;s essential records. Reach out and our team will help you prepare for tomorrow.
               </p>
             </div>
 
-            <div className="inquiry-right">
+            <div className="inquiry-right scroll-reveal stagger-2">
               {!inquirySubmitted ? (
                 <form className="inquiry-form" onSubmit={handleInquirySubmit} id="inquiry-form">
                   <div className="inquiry-row-split">
