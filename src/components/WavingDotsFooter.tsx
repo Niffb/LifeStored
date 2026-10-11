@@ -136,7 +136,7 @@ export default function WavingDotsFooter() {
     const offCtx = offscreen.getContext('2d');
     if (!offCtx) return;
 
-    // Proportional font sizing: centered vertically with generous padding
+    // Proportional font sizing: centered vertically with generous breathing room
     let fontSize: number;
     if (isSmallScreen) {
       fontSize = Math.min(
@@ -161,9 +161,9 @@ export default function WavingDotsFooter() {
     const imgData = offCtx.getImageData(0, 0, width, height);
     const data = imgData.data;
 
-    // Collect all candidate points across the full word from top to bottom
+    // Collect candidate points across the full word from top to bottom
     const candidates: { x: number; y: number }[] = [];
-    const step = isSmallScreen ? 1.8 : 3.0;
+    const step = isSmallScreen ? 2.0 : 3.2;
 
     for (let y = 0; y < height; y += step) {
       for (let x = 0; x < width; x += step) {
@@ -266,15 +266,32 @@ export default function WavingDotsFooter() {
       const particles = particlesRef.current;
       const isSmallScreen = width <= 768;
 
-      // Smooth morph progress: 0.0 (idle wave) <-> 1.0 (fully formed)
+      // Smooth ease-out morph progress: 0.0 (wave) <-> 1.0 (fully formed)
       if (hovered) {
-        morphProgressRef.current += (1.0 - morphProgressRef.current) * 0.048;
+        morphProgressRef.current += (1.0 - morphProgressRef.current) * 0.045;
       } else {
-        morphProgressRef.current += (0.0 - morphProgressRef.current) * 0.055;
+        morphProgressRef.current += (0.0 - morphProgressRef.current) * 0.052;
       }
 
       const morph = morphProgressRef.current;
       const lerpSpeed = isSmallScreen ? 0.055 : 0.048;
+
+      // TIMED CROSSFADE CURVE:
+      // - Phase 1 (0.0 to 0.50): Dots stream inward from wave toward letters. Solid text is hidden (0%).
+      // - Phase 2 (0.50 to 0.88): Dots seamlessly fade out (1.0 -> 0.0) while perfect solid word fades in (0.0 -> 1.0).
+      // - Phase 3 (0.88 to 1.0): Dots are completely faded out (0%), leaving only the 100% crisp, gap-free vector word!
+      const crossfadeStart = 0.50;
+      const crossfadeEnd = 0.88;
+      const crossfadeSpan = crossfadeEnd - crossfadeStart;
+
+      let textDotsFade = 1.0;
+      let solidTextAlpha = 0.0;
+
+      if (morph >= crossfadeStart) {
+        const progress = Math.min(1.0, (morph - crossfadeStart) / crossfadeSpan);
+        textDotsFade = Math.max(0, 1.0 - progress);
+        solidTextAlpha = Math.min(1.0, progress);
+      }
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
@@ -287,19 +304,19 @@ export default function WavingDotsFooter() {
             p.x += dx * lerpSpeed;
             p.y += dy * lerpSpeed;
 
-            p.currentAlpha += (1.0 - p.currentAlpha) * 0.08;
+            // Only draw text particles if they haven't faded out yet
+            const finalDotAlpha = p.currentAlpha * textDotsFade;
 
-            const breath = Math.sin(elapsed * 2.2 + p.phase) * (isSmallScreen ? 0.08 : 0.15);
-            const drawX = p.x + breath;
-            const drawY = p.y + breath;
+            if (finalDotAlpha > 0.02) {
+              const breath = Math.sin(elapsed * 2.2 + p.phase) * (isSmallScreen ? 0.06 : 0.12);
+              const drawX = p.x + breath;
+              const drawY = p.y + breath;
 
-            // Dot expands slightly as it settles to seamlessly cover strokes
-            const drawSize = isSmallScreen ? 1.55 : p.size * 1.1;
-
-            ctx.beginPath();
-            ctx.arc(drawX, drawY, drawSize, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 0, 0, ${p.currentAlpha.toFixed(2)})`;
-            ctx.fill();
+              ctx.beginPath();
+              ctx.arc(drawX, drawY, p.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(0, 0, 0, ${finalDotAlpha.toFixed(2)})`;
+              ctx.fill();
+            }
           } else {
             // Ambient wave particles maintain continuous visible wave around the formed text
             const waveY =
@@ -313,6 +330,7 @@ export default function WavingDotsFooter() {
             p.x += (idleTargetX - p.x) * 0.035;
             p.y += (idleTargetY - p.y) * 0.035;
 
+            // Active ambient alpha: 0.28 on mobile so the wave remains alive
             const targetAlpha = isSmallScreen ? 0.28 : 0.14;
             p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.05;
 
@@ -332,6 +350,7 @@ export default function WavingDotsFooter() {
           const idleTargetX = p.baseX + waveX;
           const idleTargetY = p.baseY + waveY;
 
+          // Smooth return to idle wave
           p.x += (idleTargetX - p.x) * 0.04;
           p.y += (idleTargetY - p.y) * 0.04;
 
@@ -346,12 +365,11 @@ export default function WavingDotsFooter() {
         }
       }
 
-      // Seamless Solidification (Zero internal gaps when dots join together)
-      // As particles arrive and merge, solid typography smoothly fills any micro-gaps
-      if (morph > 0.15) {
-        const solidAlpha = Math.min(1.0, (morph - 0.15) / 0.65);
+      // Seamless Solid Typography Fade-in:
+      // Fades in precisely as the text dots fade out, forming a 100% gapless, vector-perfect word
+      if (solidTextAlpha > 0.01) {
         ctx.save();
-        ctx.fillStyle = `rgba(0, 0, 0, ${solidAlpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(0, 0, 0, ${solidTextAlpha.toFixed(3)})`;
         ctx.font = `700 ${fontSizeRef.current}px "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
