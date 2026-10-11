@@ -21,16 +21,19 @@ export default function WavingDotsFooter() {
   const [isHovered, setIsHovered] = useState(false);
   const isHoveredRef = useRef(false);
   const [isMobile, setIsMobile] = useState(false);
+  const isMobileRef = useRef(false);
   const particlesRef = useRef<Particle[]>([]);
   const animFrameIdRef = useRef<number | null>(null);
-  const fontSizeRef = useRef(40);
-  const morphProgressRef = useRef(0);
 
   useEffect(() => {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
 
-  // Mobile detection
+  useEffect(() => {
+    isMobileRef.current = isMobile;
+  }, [isMobile]);
+
+  // Mobile detection: screen width <= 768px or coarse pointer (touch device)
   useEffect(() => {
     const checkMobile = () => {
       const isTouchOrSmall =
@@ -45,7 +48,7 @@ export default function WavingDotsFooter() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Automatic animation loop on mobile view without requiring hover
+  // Automatic animation loop on mobile view without needing hover
   useEffect(() => {
     if (!isMobile) return;
 
@@ -73,7 +76,8 @@ export default function WavingDotsFooter() {
           if (entry.isIntersecting) {
             isVisible = true;
             if (!timerId) {
-              timerId = setTimeout(triggerCycle, 800);
+              // Smooth initial 1s wave before first auto-morphing
+              timerId = setTimeout(triggerCycle, 1000);
             }
           } else {
             isVisible = false;
@@ -100,8 +104,52 @@ export default function WavingDotsFooter() {
   const initParticlesAndText = useCallback((width: number, height: number) => {
     const isSmallScreen = width <= 768;
 
-    // 1. Generate waving grid particles across full canvas + bleed
-    const gridSpacing = isSmallScreen ? 11 : 15;
+    // 1. Offscreen canvas to sample 'LifeStored' letter coordinates
+    const offscreen = document.createElement('canvas');
+    offscreen.width = width;
+    offscreen.height = height;
+    const offCtx = offscreen.getContext('2d');
+    if (!offCtx) return;
+
+    // Dynamically calculate font size so 'LifeStored' spans ~80% of width on mobile
+    // and looks balanced and prominent on desktop
+    let fontSize: number;
+    if (isSmallScreen) {
+      fontSize = Math.min(
+        Math.max(width * 0.13, 36),
+        Math.min(54, height * 0.28)
+      );
+    } else {
+      fontSize = Math.min(
+        Math.max(width * 0.082, 56),
+        Math.min(104, height * 0.32)
+      );
+    }
+
+    offCtx.fillStyle = '#000000';
+    offCtx.font = `800 ${fontSize}px "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    offCtx.textAlign = 'center';
+    offCtx.textBaseline = 'middle';
+    offCtx.fillText('LifeStored', width / 2, height / 2);
+
+    const imgData = offCtx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+
+    // Sampling step: 4 on mobile for high-definition lettering, 5.5 on desktop
+    const textPoints: { x: number; y: number }[] = [];
+    const step = isSmallScreen ? 4 : 5.5;
+
+    for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += step) {
+        const index = Math.floor(y) * width * 4 + Math.floor(x) * 4;
+        if (data[index + 3] > 140) {
+          textPoints.push({ x: Math.floor(x), y: Math.floor(y) });
+        }
+      }
+    }
+
+    // 2. Generate waving grid particles spanning FULL width & height + extra bleed
+    const gridSpacing = isSmallScreen ? 13 : 17;
     const cols = Math.ceil(width / gridSpacing) + 2;
     const rows = Math.ceil(height / gridSpacing) + 2;
 
@@ -109,8 +157,8 @@ export default function WavingDotsFooter() {
 
     for (let r = -1; r <= rows; r++) {
       for (let c = -1; c <= cols; c++) {
-        const baseX = c * gridSpacing + (Math.random() - 0.5) * 1.5;
-        const baseY = r * gridSpacing + (Math.random() - 0.5) * 1.5;
+        const baseX = c * gridSpacing;
+        const baseY = r * gridSpacing;
 
         particles.push({
           x: baseX,
@@ -120,86 +168,27 @@ export default function WavingDotsFooter() {
           targetX: baseX,
           targetY: baseY,
           hasTextTarget: false,
+          // Mobile dots: ~1.8 - 2.4px radius (crisp on high-DPI displays)
+          // Desktop dots: ~2.8 - 3.6px radius
           size: isSmallScreen
-            ? Math.random() * 0.3 + 1.3
-            : Math.random() * 0.6 + 2.2,
-          currentAlpha: isSmallScreen ? 0.42 : 0.58,
+            ? Math.random() * 0.5 + 1.8
+            : Math.random() * 0.7 + 2.8,
+          currentAlpha: 0.65,
           phase: Math.random() * Math.PI * 2,
         });
       }
     }
 
-    // 2. Offscreen canvas to sample 'LifeStored' letter coordinates
-    const offscreen = document.createElement('canvas');
-    offscreen.width = width;
-    offscreen.height = height;
-    const offCtx = offscreen.getContext('2d');
-    if (!offCtx) return;
-
-    // Proportional font sizing: centered vertically with generous breathing room
-    let fontSize: number;
-    if (isSmallScreen) {
-      fontSize = Math.min(
-        Math.max(width * 0.105, 34),
-        Math.min(44, height * 0.22)
-      );
-    } else {
-      fontSize = Math.min(
-        Math.max(width * 0.075, 54),
-        Math.min(92, height * 0.30)
-      );
-    }
-
-    fontSizeRef.current = fontSize;
-
-    offCtx.fillStyle = '#000000';
-    offCtx.font = `700 ${fontSize}px "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-    offCtx.textAlign = 'center';
-    offCtx.textBaseline = 'middle';
-    offCtx.fillText('LifeStored', width / 2, height / 2);
-
-    const imgData = offCtx.getImageData(0, 0, width, height);
-    const data = imgData.data;
-
-    // Collect candidate points across the full word from top to bottom
-    const candidates: { x: number; y: number }[] = [];
-    const step = isSmallScreen ? 2.0 : 3.2;
-
-    for (let y = 0; y < height; y += step) {
-      for (let x = 0; x < width; x += step) {
-        const px = Math.floor(x);
-        const py = Math.floor(y);
-        const index = (py * width + px) * 4;
-        if (data[index + 3] > 110) {
-          const jitterX = (Math.random() - 0.5) * (isSmallScreen ? 0.4 : 0.7);
-          const jitterY = (Math.random() - 0.5) * (isSmallScreen ? 0.4 : 0.7);
-          candidates.push({ x: x + jitterX, y: y + jitterY });
-        }
-      }
-    }
-
-    // Uniformly downsample candidates so text consumes at most 38% of total particles
-    const maxTextPoints = Math.min(candidates.length, Math.floor(particles.length * 0.38));
-    const textPoints: { x: number; y: number }[] = [];
-
-    if (candidates.length <= maxTextPoints) {
-      textPoints.push(...candidates);
-    } else {
-      const stride = candidates.length / maxTextPoints;
-      for (let i = 0; i < maxTextPoints; i++) {
-        textPoints.push(candidates[Math.floor(i * stride)]);
-      }
-    }
-
-    // 3. Nearest-Neighbor Assignment
-    const available = [...particles];
+    // 3. Optimal Nearest-Neighbor Assignment:
+    // Match each text point to its closest grid particle so particles glide smoothly into place
+    const availableParticles = [...particles];
     for (let i = 0; i < textPoints.length; i++) {
       const tp = textPoints[i];
       let bestIdx = -1;
       let minDistSq = Infinity;
 
-      for (let j = 0; j < available.length; j++) {
-        const p = available[j];
+      for (let j = 0; j < availableParticles.length; j++) {
+        const p = availableParticles[j];
         const dx = p.baseX - tp.x;
         const dy = p.baseY - tp.y;
         const distSq = dx * dx + dy * dy;
@@ -210,11 +199,11 @@ export default function WavingDotsFooter() {
       }
 
       if (bestIdx !== -1) {
-        const chosen = available[bestIdx];
+        const chosen = availableParticles[bestIdx];
         chosen.targetX = tp.x;
         chosen.targetY = tp.y;
         chosen.hasTextTarget = true;
-        available.splice(bestIdx, 1);
+        availableParticles.splice(bestIdx, 1);
       }
     }
 
@@ -234,9 +223,9 @@ export default function WavingDotsFooter() {
       if (!canvas || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       width = Math.floor(rect.width || window.innerWidth);
-      height = Math.floor(rect.height || (width <= 768 ? 220 : 300));
+      height = Math.floor(rect.height || (width <= 768 ? 260 : 340));
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const dpr = window.devicePixelRatio || 1;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
@@ -246,12 +235,7 @@ export default function WavingDotsFooter() {
       initParticlesAndText(width, height);
     };
 
-    if (typeof document !== 'undefined' && document.fonts?.ready) {
-      document.fonts.ready.then(handleResize);
-    } else {
-      handleResize();
-    }
-
+    handleResize();
     window.addEventListener('resize', handleResize);
 
     const startTime = performance.now();
@@ -264,65 +248,38 @@ export default function WavingDotsFooter() {
 
       const hovered = isHoveredRef.current;
       const particles = particlesRef.current;
-      const isSmallScreen = width <= 768;
 
-      // Smooth ease-out morph progress: 0.0 (wave) <-> 1.0 (fully formed)
-      if (hovered) {
-        morphProgressRef.current += (1.0 - morphProgressRef.current) * 0.045;
-      } else {
-        morphProgressRef.current += (0.0 - morphProgressRef.current) * 0.052;
-      }
-
-      const morph = morphProgressRef.current;
-      const lerpSpeed = isSmallScreen ? 0.055 : 0.048;
-
-      // TIMED CROSSFADE CURVE:
-      // - Phase 1 (0.0 to 0.50): Dots stream inward from wave toward letters. Solid text is hidden (0%).
-      // - Phase 2 (0.50 to 0.88): Dots seamlessly fade out (1.0 -> 0.0) while perfect solid word fades in (0.0 -> 1.0).
-      // - Phase 3 (0.88 to 1.0): Dots are completely faded out (0%), leaving only the 100% crisp, gap-free vector word!
-      const crossfadeStart = 0.50;
-      const crossfadeEnd = 0.88;
-      const crossfadeSpan = crossfadeEnd - crossfadeStart;
-
-      let textDotsFade = 1.0;
-      let solidTextAlpha = 0.0;
-
-      if (morph >= crossfadeStart) {
-        const progress = Math.min(1.0, (morph - crossfadeStart) / crossfadeSpan);
-        textDotsFade = Math.max(0, 1.0 - progress);
-        solidTextAlpha = Math.min(1.0, progress);
-      }
+      const lerpSpeed = 0.048;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         if (hovered) {
           if (p.hasTextTarget) {
-            // Glide smoothly toward target letter positions
+            // Smooth glide toward target letter positions
             const dx = p.targetX - p.x;
             const dy = p.targetY - p.y;
             p.x += dx * lerpSpeed;
             p.y += dy * lerpSpeed;
 
-            // Only draw text particles if they haven't faded out yet
-            const finalDotAlpha = p.currentAlpha * textDotsFade;
+            // Crisp solid black for formed text
+            p.currentAlpha += (1.0 - p.currentAlpha) * 0.06;
 
-            if (finalDotAlpha > 0.02) {
-              const breath = Math.sin(elapsed * 2.2 + p.phase) * (isSmallScreen ? 0.06 : 0.12);
-              const drawX = p.x + breath;
-              const drawY = p.y + breath;
+            // Subtle organic breathing micro-motion
+            const breath = Math.sin(elapsed * 2.2 + p.phase) * 0.22;
+            const drawX = p.x + breath;
+            const drawY = p.y + breath;
 
-              ctx.beginPath();
-              ctx.arc(drawX, drawY, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(0, 0, 0, ${finalDotAlpha.toFixed(2)})`;
-              ctx.fill();
-            }
+            ctx.beginPath();
+            ctx.arc(drawX, drawY, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 0, 0, ${p.currentAlpha.toFixed(2)})`;
+            ctx.fill();
           } else {
-            // Ambient wave particles maintain continuous visible wave around the formed text
+            // Ambient background particles remain in gentle wave but fade to faint shimmer
             const waveY =
-              Math.sin(elapsed * 1.8 + p.baseX * 0.012 + p.baseY * 0.016) * (isSmallScreen ? 8 : 13) +
-              Math.cos(elapsed * 1.3 + p.baseX * 0.02) * (isSmallScreen ? 4 : 5.5);
-            const waveX = Math.cos(elapsed * 1.4 + p.baseY * 0.018) * (isSmallScreen ? 3 : 4);
+              Math.sin(elapsed * 1.8 + p.baseX * 0.01 + p.baseY * 0.014) * 14 +
+              Math.cos(elapsed * 1.3 + p.baseX * 0.018) * 6;
+            const waveX = Math.cos(elapsed * 1.4 + p.baseY * 0.016) * 4;
 
             const idleTargetX = p.baseX + waveX;
             const idleTargetY = p.baseY + waveY;
@@ -330,51 +287,38 @@ export default function WavingDotsFooter() {
             p.x += (idleTargetX - p.x) * 0.035;
             p.y += (idleTargetY - p.y) * 0.035;
 
-            // Active ambient alpha: 0.28 on mobile so the wave remains alive
-            const targetAlpha = isSmallScreen ? 0.28 : 0.14;
-            p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.05;
+            // Fade softly to 0.035 so central LifeStored stands out cleanly
+            p.currentAlpha += (0.035 - p.currentAlpha) * 0.05;
 
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * 0.9, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(0, 0, 0, ${p.currentAlpha.toFixed(2)})`;
             ctx.fill();
           }
         } else {
           // Undulating continuous sine & cosine waves filling the entire viewport
-          const waveAmpY = isSmallScreen ? 11 : 16;
           const waveY =
-            Math.sin(elapsed * 2.0 + p.baseX * 0.012 + p.baseY * 0.016) * waveAmpY +
-            Math.cos(elapsed * 1.4 + p.baseX * 0.02) * (waveAmpY * 0.5);
-          const waveX = Math.cos(elapsed * 1.6 + p.baseY * 0.018) * (isSmallScreen ? 3 : 4.5);
+            Math.sin(elapsed * 2.0 + p.baseX * 0.01 + p.baseY * 0.014) * 16 +
+            Math.cos(elapsed * 1.4 + p.baseX * 0.018) * 8;
+          const waveX = Math.cos(elapsed * 1.6 + p.baseY * 0.016) * 5;
 
           const idleTargetX = p.baseX + waveX;
           const idleTargetY = p.baseY + waveY;
 
-          // Smooth return to idle wave
-          p.x += (idleTargetX - p.x) * 0.04;
-          p.y += (idleTargetY - p.y) * 0.04;
+          // Smooth return to the idle wave
+          p.x += (idleTargetX - p.x) * 0.038;
+          p.y += (idleTargetY - p.y) * 0.038;
 
-          const depth = (Math.sin(elapsed * 2.0 + p.baseX * 0.012) + 1) * 0.5;
-          const targetAlpha = isSmallScreen ? 0.32 + depth * 0.32 : 0.38 + depth * 0.44;
-          p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.05;
+          // Depth wave alpha calculation
+          const depth = (Math.sin(elapsed * 2.0 + p.baseX * 0.01) + 1) * 0.5;
+          const targetAlpha = 0.42 + depth * 0.48;
+          p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.04;
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(0, 0, 0, ${p.currentAlpha.toFixed(2)})`;
           ctx.fill();
         }
-      }
-
-      // Seamless Solid Typography Fade-in:
-      // Fades in precisely as the text dots fade out, forming a 100% gapless, vector-perfect word
-      if (solidTextAlpha > 0.01) {
-        ctx.save();
-        ctx.fillStyle = `rgba(0, 0, 0, ${solidTextAlpha.toFixed(3)})`;
-        ctx.font = `700 ${fontSizeRef.current}px "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('LifeStored', width / 2, height / 2);
-        ctx.restore();
       }
 
       animFrameIdRef.current = requestAnimationFrame(render);
