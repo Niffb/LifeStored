@@ -1105,10 +1105,10 @@ body {
 
 @media (max-width: 768px) {
   .edge-to-edge-footer {
-    margin: 0.5rem 0 0 0;
+    margin: 1rem 0 0 0;
   }
   .fullscreen-dots-canvas-wrapper {
-    height: clamp(160px, 24vh, 220px);
+    height: clamp(200px, 28vh, 260px);
   }
 }
 
