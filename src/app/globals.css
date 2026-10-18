@@ -1269,3 +1269,357 @@ body {
   }
 }
 
+/* Floating Pill Sticky Navbar (Matching reference design) */
+.floating-pill-navbar {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-25px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  padding: 0.35rem 0.45rem 0.35rem 1.35rem;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  max-width: 90vw;
+  width: max-content;
+}
+
+.floating-pill-navbar.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.floating-pill-navbar:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.pill-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #000000;
+  text-decoration: none;
+}
+
+.pill-nav-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f4f4f6;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.pill-nav-brand:hover .pill-nav-icon {
+  transform: scale(1.08);
+}
+
+.pill-nav-title {
+  font-family: var(--font-display);
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+.pill-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.pill-nav-link {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.pill-nav-link:hover {
+  color: #000000;
+}
+
+/* Scroll margin offset for clean scrolling under the floating navbar */
+#pillars-section,
+#partners-banner,
+#faq-section,
+#waitlist-box,
+#top {
+  scroll-margin-top: 90px;
+}
+
+.pill-nav-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f1f23;
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 500;
+  padding: 0.65rem 1.45rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pill-nav-cta-btn:hover {
+  background: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.pill-nav-cta-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .floating-pill-navbar {
+    gap: 1rem;
+    padding: 0.35rem 0.35rem 0.35rem 1rem;
+    width: calc(100% - 2rem);
+  }
+  .pill-nav-links {
+    display: none;
+  }
+  .pill-nav-title {
+    font-size: 0.9rem;
+  }
+  .pill-nav-cta-btn {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Modern Gradient Footer (matching reference image) */
+.modern-gradient-footer {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f7fc 25%, #d5e2f7 65%, #9abde9 100%);
+  overflow: hidden;
+  padding-bottom: 2.5rem;
+}
+
+.modern-footer-container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 5rem 2rem 2.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.modern-footer-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 3.5rem;
+  margin-bottom: 4rem;
+}
+
+/* Left Col */
+.modern-footer-left-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 360px;
+}
+
+.modern-social-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.modern-social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.modern-social-btn:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  transform: translateY(-2px);
+}
+
+.modern-contact-email {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+  display: inline-block;
+  transition: opacity 0.2s ease;
+}
+
+.modern-contact-email:hover {
+  opacity: 0.7;
+}
+
+.modern-company-address {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* Right Area: 2 Columns of Relevant Links */
+.modern-footer-right-area {
+  display: flex;
+  gap: 4.5rem;
+}
+
+.modern-footer-links-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-footer-group-title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+  margin-bottom: 1.15rem;
+  display: block;
+}
+
+.modern-footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modern-footer-link {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  text-align: left;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.modern-footer-link:hover {
+  color: #000000;
+  transform: translateX(2px);
+}
+
+.modern-footer-link.highlight-link {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modern-footer-link.highlight-link:hover {
+  color: #1e3a8a;
+}
+
+/* Sub-Bar */
+.modern-footer-subbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2.25rem;
+  border-top: none;
+  font-size: 0.84rem;
+  color: #475569;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.modern-subbar-link {
+  color: #334155;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.modern-subbar-link:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+.modern-subbar-copyright {
+  color: #475569;
+}
+
+/* Giant Watermark Typography */
+.modern-giant-watermark {
+  position: absolute;
+  bottom: -9%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: clamp(6.5rem, 20vw, 17.5rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 0.75;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-footer-main-row {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .modern-footer-right-area {
+    gap: 3rem;
+  }
+  .modern-footer-subbar {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.85rem;
+  }
+  .modern-giant-watermark {
+    bottom: -5%;
+  }
+}
+
+
+
+
+

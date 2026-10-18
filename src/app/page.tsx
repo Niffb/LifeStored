@@ -14,7 +14,7 @@ import {
   ScanLine,
   BellRing
 } from 'lucide-react';
-import WavingDotsFooter from '@/components/WavingDotsFooter';
+import ModernFooter from '@/components/ModernFooter';
 
 export default function ComingSoonPage() {
   const [email, setEmail] = useState('');
@@ -33,6 +33,8 @@ export default function ComingSoonPage() {
   const [isInquirySubmitting, setIsInquirySubmitting] = useState(false);
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
+  const [showStickyNav, setShowStickyNav] = useState(false);
+
   // Load persisted waitlist on mount
   useEffect(() => {
     const savedEmail = localStorage.getItem('lifestored_waitlist_email');
@@ -43,6 +45,44 @@ export default function ComingSoonPage() {
       setJoinedWaitlist(true);
     }
   }, []);
+
+  // Listen to scroll to reveal sticky navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 160) {
+        setShowStickyNav(true);
+      } else {
+        setShowStickyNav(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTarget = (targetId: string, focusInput = false) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      const navOffset = 85;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth'
+      });
+
+      if (focusInput && !joinedWaitlist) {
+        const input = document.getElementById('email-input');
+        if (input) {
+          setTimeout(() => input.focus(), 450);
+        }
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -169,6 +209,56 @@ export default function ComingSoonPage() {
 
   return (
     <>
+      {/* Floating Pill Sticky Navbar (styled to match reference design) */}
+      <nav 
+        className={`floating-pill-navbar ${showStickyNav ? 'visible' : ''}`}
+        aria-label="Sticky navigation"
+      >
+        <button 
+          type="button" 
+          className="pill-nav-brand"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Life Stored - Scroll to top"
+        >
+          <div className="pill-nav-icon">
+            <ShieldCheck size={15} strokeWidth={2.4} />
+          </div>
+          <span className="pill-nav-title">Life Stored</span>
+        </button>
+
+        <div className="pill-nav-links">
+          <button 
+            type="button" 
+            className="pill-nav-link"
+            onClick={() => scrollToTarget('pillars-section')}
+          >
+            Features
+          </button>
+          <button 
+            type="button" 
+            className="pill-nav-link"
+            onClick={() => scrollToTarget('partners-banner')}
+          >
+            Partners
+          </button>
+          <button 
+            type="button" 
+            className="pill-nav-link"
+            onClick={() => scrollToTarget('faq-section')}
+          >
+            FAQ
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="pill-nav-cta-btn"
+          onClick={() => scrollToTarget('waitlist-box', true)}
+        >
+          {joinedWaitlist ? 'Priority Spot' : 'Join Waitlist'}
+        </button>
+      </nav>
+
       <div className="page-wrapper" id="top">
       {/* Toast Notification */}
       {toastMessage && (
@@ -479,10 +569,8 @@ export default function ComingSoonPage() {
         </main>
       </div>
 
-      {/* Edge-to-Edge Full Width Footer with Waving Dots (No Side Margins, No White Space Below) */}
-      <footer className="edge-to-edge-footer" id="site-footer">
-        <WavingDotsFooter />
-      </footer>
+      {/* Modern Gradient Footer matching reference image */}
+      <ModernFooter onScrollToTarget={scrollToTarget} />
     </>
   );
 }
