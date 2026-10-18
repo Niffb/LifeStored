@@ -30,7 +30,6 @@ export default function RootLayout({
     <html lang="en" data-theme="light">
       <body>
         <div className="ambient-circle-1" aria-hidden="true" />
-        <div className="subtle-grid" aria-hidden="true" />
         {children}
       </body>
     </html>

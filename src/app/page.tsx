@@ -272,6 +272,22 @@ export default function ComingSoonPage() {
           </div>
         </section>
 
+        {/* Simple & Clean Partners Banner */}
+        <div className="partners-clean-banner" id="partners-banner">
+          <span className="partners-banner-label">Partners</span>
+          <div className="partners-pills-row">
+            <span className="partner-item-text">Company X</span>
+            <span className="partner-separator-dot">•</span>
+            <span className="partner-item-text">Company Y</span>
+            <span className="partner-separator-dot">•</span>
+            <span className="partner-item-text">Dead Organised</span>
+            <span className="partner-separator-dot">•</span>
+            <span className="partner-item-text">Laurelo</span>
+            <span className="partner-separator-dot">•</span>
+            <span className="partner-item-text">Company Z</span>
+          </div>
+        </div>
+
         {/* Plain English Features Section */}
         <section className="pillars-section" id="pillars-section">
           <div className="section-header scroll-reveal">
