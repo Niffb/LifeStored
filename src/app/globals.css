@@ -267,15 +267,6 @@ button:active:not(:disabled) {
   align-items: center;
   min-height: 560px;
 }
-.hero-doodle {
-  position: absolute;
-  width: 62%;
-  left: -14%;
-  bottom: 2%;
-  opacity: 0.95;
-  pointer-events: none;
-  user-select: none;
-}
 
 /* Phone frame around real app screenshots */
 .phone {
@@ -1109,12 +1100,7 @@ button:active:not(:disabled) {
     min-height: 0;
     padding: 12px 0 8px;
   }
-  .hero-doodle {
-    width: 46%;
-    left: 0;
-    bottom: 0;
-  }
-  .steps-section,
+    .steps-section,
   .pillars-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

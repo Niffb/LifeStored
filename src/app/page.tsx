@@ -340,7 +340,6 @@ export default function ComingSoonPage() {
             </div>
 
             <div className="hero-visual rise" style={{ '--i': 3 } as React.CSSProperties}>
-              <img src="/images/slide1-documents.png" alt="" className="hero-doodle" aria-hidden="true" />
               <div className="phone">
                 <img src="/images/app/app-vault.jpg" alt="The LifeStored vault on a phone: documents, renewals and search" className="phone-screen" />
               </div>
