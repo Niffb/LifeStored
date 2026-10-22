@@ -15,7 +15,7 @@ import {
   ScanLine,
   BellRing
 } from 'lucide-react';
-import GradientFooter from '@/components/GradientFooter';
+import ModernFooter from '@/components/ModernFooter';
 
 export default function ComingSoonPage() {
   const [email, setEmail] = useState('');
@@ -34,6 +34,8 @@ export default function ComingSoonPage() {
   const [isInquirySubmitting, setIsInquirySubmitting] = useState(false);
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
+  const [showStickyNav, setShowStickyNav] = useState(false);
+
   // Load persisted waitlist on mount
   useEffect(() => {
     const savedEmail = localStorage.getItem('lifestored_waitlist_email');
@@ -44,6 +46,28 @@ export default function ComingSoonPage() {
       setJoinedWaitlist(true);
     }
   }, []);
+
+  // Reveal the floating navbar once the top bar has scrolled away
+  useEffect(() => {
+    const handleScroll = () => setShowStickyNav(window.scrollY > 160);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTarget = (targetId: string, focusInput = false) => {
+    const element = document.getElementById(targetId);
+    if (!element) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const navOffset = 96;
+    window.scrollTo({ top: Math.max(0, element.getBoundingClientRect().top + window.pageYOffset - navOffset), behavior: 'smooth' });
+    if (focusInput && !joinedWaitlist) {
+      const input = document.getElementById('email-input');
+      if (input) setTimeout(() => input.focus(), 450);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -197,6 +221,30 @@ export default function ComingSoonPage() {
 
   return (
     <>
+      {/* Floating pill navbar, shown once you scroll (black, like the app's bottom bar) */}
+      <nav className={`floating-pill-navbar ${showStickyNav ? 'visible' : ''}`} aria-label="Sticky navigation">
+        <button type="button" className="pill-nav-brand" onClick={scrollToTop} aria-label="LifeStored - Scroll to top">
+          <span className="pill-nav-icon">
+            <FolderLock size={15} strokeWidth={2} />
+          </span>
+          <span className="pill-nav-title">LifeStored</span>
+        </button>
+        <div className="pill-nav-links">
+          <button type="button" className="pill-nav-link" onClick={() => scrollToTarget('pillars-section')}>
+            Features
+          </button>
+          <button type="button" className="pill-nav-link" onClick={() => scrollToTarget('partners-banner')}>
+            Partners
+          </button>
+          <button type="button" className="pill-nav-link" onClick={() => scrollToTarget('faq-section')}>
+            FAQ
+          </button>
+        </div>
+        <button type="button" className="pill-nav-cta-btn" onClick={() => scrollToTarget('waitlist-box', true)}>
+          {joinedWaitlist ? 'Your spot' : 'Join waitlist'}
+        </button>
+      </nav>
+
       <div className="page-wrapper" id="top">
         {/* Toast Notification */}
         {toastMessage && (
@@ -215,9 +263,9 @@ export default function ComingSoonPage() {
             <span className="brand-name">LifeStored</span>
             <span className="stage-pill">Coming soon</span>
           </a>
-          <a href="#waitlist-box" className="nav-cta">
+          <button type="button" className="nav-cta" onClick={() => scrollToTarget('waitlist-box', true)}>
             Join the waitlist
-          </a>
+          </button>
         </header>
 
         <main className="main-content" id="main-content">
@@ -298,6 +346,22 @@ export default function ComingSoonPage() {
               </div>
             </div>
           </section>
+
+          {/* Partners */}
+          <div className="partners-clean-banner scroll-reveal" id="partners-banner">
+            <span className="partners-banner-label">Partners</span>
+            <div className="partners-pills-row">
+              <span className="partner-item-text">Company X</span>
+              <span className="partner-separator-dot">•</span>
+              <span className="partner-item-text">Company Y</span>
+              <span className="partner-separator-dot">•</span>
+              <span className="partner-item-text">Dead Organised</span>
+              <span className="partner-separator-dot">•</span>
+              <span className="partner-item-text">Laurelo</span>
+              <span className="partner-separator-dot">•</span>
+              <span className="partner-item-text">Company Z</span>
+            </div>
+          </div>
 
           {/* Three steps, like the app's welcome */}
           <section className="steps-section" id="how-it-works">
@@ -446,7 +510,7 @@ export default function ComingSoonPage() {
         </main>
       </div>
 
-      <GradientFooter />
+      <ModernFooter onScrollToTarget={scrollToTarget} />
     </>
   );
 }
