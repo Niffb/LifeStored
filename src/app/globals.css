@@ -916,13 +916,13 @@ button:active:not(:disabled) {
   background: var(--grey-200);
 }
 
-/* ---------- Footer (the gradient footer from the live site) ---------- */
+/* ---------- Footer (gradient footer, in neutral greys until there's a brand kit) ---------- */
 .modern-gradient-footer {
   position: relative;
   width: 100%;
   overflow: hidden;
   padding-bottom: 2.5rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f4f7fc 25%, #d5e2f7 65%, #9abde9 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 25%, #e2e2e2 65%, #c2c2c2 100%);
 }
 .modern-footer-container {
   position: relative;
@@ -956,15 +956,15 @@ button:active:not(:disabled) {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f172a;
+  color: #0a0a0a;
   background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(10, 10, 10, 0.35);
   transition: all 0.2s ease;
 }
 .modern-social-btn:hover {
   color: #ffffff;
-  background: #0f172a;
-  border-color: #0f172a;
+  background: #0a0a0a;
+  border-color: #0a0a0a;
   transform: translateY(-2px);
 }
 .modern-contact-email {
@@ -974,7 +974,7 @@ button:active:not(:disabled) {
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: #0a0a0a;
   transition: opacity 0.2s ease;
 }
 .modern-contact-email:hover {
@@ -983,7 +983,7 @@ button:active:not(:disabled) {
 .modern-company-address {
   font-size: 0.88rem;
   line-height: 1.6;
-  color: #475569;
+  color: #525252;
 }
 .modern-footer-right-area {
   display: flex;
@@ -1001,7 +1001,7 @@ button:active:not(:disabled) {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0f172a;
+  color: #0a0a0a;
 }
 .modern-footer-nav {
   display: flex;
@@ -1017,7 +1017,7 @@ button:active:not(:disabled) {
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: #334155;
+  color: #404040;
   transition: color 0.15s ease, transform 0.15s ease;
 }
 .modern-footer-link:hover {
@@ -1026,10 +1026,10 @@ button:active:not(:disabled) {
 }
 .modern-footer-link.highlight-link {
   font-weight: 700;
-  color: #0f172a;
+  color: #0a0a0a;
 }
 .modern-footer-link.highlight-link:hover {
-  color: #1e3a8a;
+  color: #000000;
 }
 .modern-footer-subbar {
   display: flex;
@@ -1039,18 +1039,18 @@ button:active:not(:disabled) {
   gap: 1rem;
   padding-top: 2.25rem;
   font-size: 0.84rem;
-  color: #475569;
+  color: #525252;
 }
 .modern-subbar-link {
-  color: #334155;
+  color: #404040;
   transition: color 0.2s ease;
 }
 .modern-subbar-link:hover {
-  color: #0f172a;
+  color: #0a0a0a;
   text-decoration: underline;
 }
 .modern-subbar-copyright {
-  color: #475569;
+  color: #525252;
 }
 .modern-giant-watermark {
   position: absolute;
@@ -1064,7 +1064,7 @@ button:active:not(:disabled) {
   font-weight: 800;
   line-height: 0.75;
   letter-spacing: -0.05em;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
   user-select: none;
 }
