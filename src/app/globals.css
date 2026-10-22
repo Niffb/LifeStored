@@ -401,46 +401,14 @@ button:active:not(:disabled) {
 .success-desc strong {
   color: var(--ink);
 }
-.waitlist-number-chip {
-  display: inline-flex;
-  padding: 1px 9px;
-  border-radius: 999px;
-  background: var(--black);
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 700;
+.waitlist-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
-.referral-share-box {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 6px 6px 16px;
-  border-radius: 999px;
-  background: var(--white);
-}
-.referral-link-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 13.5px;
-  color: var(--grey-600);
-}
-.share-copy-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--black);
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
+
 .reset-waitlist-btn {
   margin-top: 12px;
   border: 0;

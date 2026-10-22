@@ -8,7 +8,6 @@ import {
   Users, 
   ArrowRight, 
   Check, 
-  Copy, 
   ChevronDown, 
   FileText,
   FolderLock,
@@ -21,10 +20,9 @@ export default function ComingSoonPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [joinedWaitlist, setJoinedWaitlist] = useState(false);
-  const [waitlistNumber, setWaitlistNumber] = useState<number | null>(null);
+  const [company, setCompany] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const [copiedLink, setCopiedLink] = useState(false);
 
   // Inquiry form state
   const [inquiryName, setInquiryName] = useState('');
@@ -39,10 +37,8 @@ export default function ComingSoonPage() {
   // Load persisted waitlist on mount
   useEffect(() => {
     const savedEmail = localStorage.getItem('lifestored_waitlist_email');
-    const savedNumber = localStorage.getItem('lifestored_waitlist_number');
-    if (savedEmail && savedNumber) {
+    if (savedEmail) {
       setEmail(savedEmail);
-      setWaitlistNumber(parseInt(savedNumber, 10));
       setJoinedWaitlist(true);
     }
   }, []);
@@ -76,7 +72,7 @@ export default function ComingSoonPage() {
     }, 3200);
   };
 
-  const handleWaitlistSubmit = (e: React.FormEvent) => {
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
       showToast('Please enter a valid email address.');
@@ -84,47 +80,46 @@ export default function ComingSoonPage() {
     }
 
     setIsSubmitting(true);
-
-    setTimeout(() => {
-      const randomSpot = Math.floor(Math.random() * 40) + 380;
-      setWaitlistNumber(randomSpot);
-      setJoinedWaitlist(true);
-      setIsSubmitting(false);
-
-      localStorage.setItem('lifestored_waitlist_email', email);
-      localStorage.setItem('lifestored_waitlist_number', randomSpot.toString());
-
-      // Trigger celebratory monochrome confetti burst
-      try {
-        confetti({
-          particleCount: 75,
-          spread: 65,
-          origin: { y: 0.55 },
-          colors: ['#000000', '#374151', '#9ca3af', '#e5e7eb', '#ffffff'],
-        });
-      } catch {
-        // Fallback gracefully
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, company }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(data.error || 'Something went wrong. Please try again.');
+        return;
       }
+    } catch {
+      showToast('Could not connect. Please try again.');
+      return;
+    } finally {
+      setIsSubmitting(false);
+    }
 
-      showToast('You are officially on the waitlist!');
-    }, 550);
-  };
+    setJoinedWaitlist(true);
+    localStorage.setItem('lifestored_waitlist_email', email);
 
-  const handleCopyLink = () => {
-    const inviteUrl = `https://lifestored.com/?ref=VIP-${waitlistNumber || 'INVITE'}`;
-    navigator.clipboard.writeText(inviteUrl);
-    setCopiedLink(true);
-    showToast('Priority referral link copied to clipboard!');
-    setTimeout(() => setCopiedLink(false), 2400);
+    // Trigger celebratory monochrome confetti burst
+    try {
+      confetti({
+        particleCount: 75,
+        spread: 65,
+        origin: { y: 0.55 },
+        colors: ['#000000', '#374151', '#9ca3af', '#e5e7eb', '#ffffff'],
+      });
+    } catch {
+      // Fallback gracefully
+    }
+
+    showToast('You are officially on the waitlist!');
   };
 
   const handleResetWaitlist = () => {
     localStorage.removeItem('lifestored_waitlist_email');
-    localStorage.removeItem('lifestored_waitlist_number');
     setJoinedWaitlist(false);
     setEmail('');
-    setWaitlistNumber(null);
-    showToast('Reset waitlist demo.');
   };
 
   const handleInquirySubmit = (e: React.FormEvent) => {
@@ -241,7 +236,7 @@ export default function ComingSoonPage() {
           </button>
         </div>
         <button type="button" className="pill-nav-cta-btn" onClick={() => scrollToTarget('waitlist-box', true)}>
-          {joinedWaitlist ? 'Your spot' : 'Join waitlist'}
+          {joinedWaitlist ? 'You’re in' : 'Join waitlist'}
         </button>
       </nav>
 
@@ -299,6 +294,16 @@ export default function ComingSoonPage() {
                       required
                       aria-label="Email address for waitlist"
                     />
+                    <input
+                      type="text"
+                      name="company"
+                      className="waitlist-honeypot"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                    />
                     <button type="submit" id="waitlist-submit-button" className="waitlist-submit-btn" disabled={isSubmitting}>
                       {isSubmitting ? (
                         <span>Joining…</span>
@@ -317,16 +322,8 @@ export default function ComingSoonPage() {
                     </div>
                     <h3 className="success-title">You&apos;re on the list</h3>
                     <p className="success-desc">
-                      Welcome, <strong>{email}</strong>. You hold spot <span className="waitlist-number-chip">#{waitlistNumber}</span> for
-                      the private release.
+                      Thanks, <strong>{email}</strong>. We&apos;ll email you when the private alpha opens.
                     </p>
-                    <div className="referral-share-box">
-                      <span className="referral-link-text">lifestored.com/?ref=VIP-{waitlistNumber}</span>
-                      <button id="copy-invite-link-button" type="button" className="share-copy-btn" onClick={handleCopyLink}>
-                        {copiedLink ? <Check size={14} strokeWidth={2.4} /> : <Copy size={14} />}
-                        <span>{copiedLink ? 'Copied' : 'Copy link'}</span>
-                      </button>
-                    </div>
                     <button type="button" id="reset-waitlist-demo-button" className="reset-waitlist-btn" onClick={handleResetWaitlist}>
                       Change email
                     </button>
@@ -334,7 +331,7 @@ export default function ComingSoonPage() {
                 )}
 
                 <p className="waitlist-note" id="social-proof-bar">
-                  <strong>Free to join.</strong> Be one of the first to try LifeStored when the private alpha opens.
+                  <strong>Free to join.</strong> We&apos;ll only use your email to tell you about LifeStored.
                 </p>
               </div>
             </div>
