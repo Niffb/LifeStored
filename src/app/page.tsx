@@ -11,10 +11,11 @@ import {
   Copy, 
   ChevronDown, 
   FileText,
+  FolderLock,
   ScanLine,
   BellRing
 } from 'lucide-react';
-import WavingDotsFooter from '@/components/WavingDotsFooter';
+import GradientFooter from '@/components/GradientFooter';
 
 export default function ComingSoonPage() {
   const [email, setEmail] = useState('');
@@ -159,314 +160,293 @@ export default function ComingSoonPage() {
     },
     {
       q: 'Can I continuously update my uploaded documents?',
-      a: 'Yes. Life Stored provides full document version history with tamper-evident timestamps and audit logs. Whenever life changes, you can upload amendments or new drafts while maintaining clear legal provenance.'
+      a: 'Yes. Rescan, replace or edit any document whenever life changes. Every change, view and download is recorded in your history with who did it and when.'
     },
     {
       q: 'How does the on-device AI scanner work?',
-      a: 'Our document scanner runs 100% locally on your browser or device. It analyzes and catalogs your legal paperwork without uploading scans to third-party cloud APIs, guaranteeing total privacy.'
+      a: 'Point your phone at a page: the scanner finds the edges, flattens it and cleans it up. Reading the title and key details happens on your own device, and the finished scan is encrypted before it is stored.'
     }
+  ];
+
+  const steps = [
+    {
+      img: '/images/slide1-documents.png',
+      word1: 'Life',
+      word2: 'Stored',
+      text: 'Gather your wills, deeds, passports and policies in one vault. Scan with your phone or upload a PDF.',
+    },
+    {
+      img: '/images/slide2-vault.png',
+      word1: 'Total',
+      word2: 'Trust',
+      text: 'Every file is sealed with AES-256 encryption the moment it is saved, and only opened by you or the people you choose.',
+    },
+    {
+      img: '/images/slide3-keys.png',
+      word1: 'Stay',
+      word2: 'Safe',
+      text: 'Name your executors. When the time comes, they get exactly what you left them, and a clear plan for what to do next.',
+    },
+  ];
+
+  const showcase = [
+    { img: '/images/app/app-document.jpg', title: 'Every document, beautifully kept', text: 'Clean scans, key details read automatically, and renewals flagged before they lapse.' },
+    { img: '/images/app/app-share.jpg', title: 'Share without losing control', text: 'Links that expire when you say, open once if you like, and carry the recipient’s name as a watermark.' },
+    { img: '/images/app/app-executor.jpg', title: 'A calm handover for your family', text: 'Executors see your wishes, the documents you chose, and a step-by-step probate roadmap.' },
   ];
 
   return (
     <>
       <div className="page-wrapper" id="top">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="toast-msg" role="status" aria-live="polite">
-          <Check size={16} strokeWidth={2.5} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Main Content Area */}
-      <main className="main-content" id="main-content">
-        {/* Hero Section */}
-        <section className="hero-section" id="hero-section">
-          <h1 className="hero-title anim-fade-up-1" id="main-heading">
-            Life Stored.
-            <span className="hero-title-highlight">A digital vault for wills and testimony documents.</span>
-          </h1>
-
-          <p className="hero-subtitle anim-fade-up-2">
-            Create your vault with verified identity, designate trusted executors, and upload vital documents with total privacy. Accessible and continuously updatable throughout your lifetime, safely released when your family needs it most.
-          </p>
-
-          {/* Waitlist Box */}
-          <div className="waitlist-container anim-fade-up-3" id="waitlist-box">
-            {!joinedWaitlist ? (
-              <form className="waitlist-form" onSubmit={handleWaitlistSubmit} id="waitlist-form">
-                <input
-                  type="email"
-                  id="email-input"
-                  className="waitlist-input"
-                  placeholder="Enter your email to join the waitlist..."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  aria-label="Email address for waitlist"
-                />
-                <button
-                  type="submit"
-                  id="waitlist-submit-button"
-                  className="waitlist-submit-btn"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <span>Joining...</span>
-                  ) : (
-                    <>
-                      <span>Join Waitlist</span>
-                      <ArrowRight size={15} className="btn-arrow-icon" strokeWidth={2.2} />
-                    </>
-                  )}
-                </button>
-              </form>
-            ) : (
-              <div className="waitlist-success-card" id="waitlist-success-view">
-                <div className="success-icon-badge">
-                  <Check size={22} strokeWidth={2.6} />
-                </div>
-                <h3 className="success-title">You are on the priority waitlist</h3>
-                <p className="success-desc">
-                  Welcome, <strong style={{ color: '#000000' }}>{email}</strong>. You hold spot <span className="waitlist-number-chip">#{waitlistNumber}</span> for the private release.
-                </p>
-
-                <div className="referral-share-box">
-                  <span className="referral-link-text">
-                    lifestored.com/?ref=VIP-{waitlistNumber}
-                  </span>
-                  <button
-                    id="copy-invite-link-button"
-                    type="button"
-                    className="share-copy-btn"
-                    onClick={handleCopyLink}
-                  >
-                    {copiedLink ? <Check size={14} strokeWidth={2.4} /> : <Copy size={14} />}
-                    <span>{copiedLink ? 'Copied' : 'Copy Link'}</span>
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  id="reset-waitlist-demo-button"
-                  className="reset-waitlist-btn"
-                  onClick={handleResetWaitlist}
-                >
-                  Change email or reset
-                </button>
-              </div>
-            )}
-
-            {/* Social Proof */}
-            <div className="social-proof" id="social-proof-bar">
-              <div className="avatar-group" aria-hidden="true">
-                <div className="proof-avatar avatar-1">N</div>
-                <div className="proof-avatar avatar-2">E</div>
-                <div className="proof-avatar avatar-3">A</div>
-                <div className="proof-avatar avatar-4">M</div>
-              </div>
-              <span className="proof-text">
-                Joined by <strong className="proof-highlight">1,480+</strong> individuals, families, and estate planners.
-              </span>
-            </div>
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="toast-msg" role="status" aria-live="polite">
+            <Check size={16} strokeWidth={2.5} />
+            <span>{toastMessage}</span>
           </div>
-        </section>
+        )}
 
-        {/* Plain English Features Section */}
-        <section className="pillars-section" id="pillars-section">
-          <div className="section-header scroll-reveal">
-            <span className="section-tag">Key Features</span>
-            <h2 className="section-title">Built for lifetime clarity and verified legacy handover.</h2>
-          </div>
+        {/* Top bar */}
+        <header className="site-nav">
+          <a href="#top" className="brand" onClick={(e) => { e.preventDefault(); scrollToTop(); }}>
+            <span className="brand-tile" aria-hidden="true">
+              <FolderLock size={18} strokeWidth={1.9} />
+            </span>
+            <span className="brand-name">LifeStored</span>
+            <span className="stage-pill">Coming soon</span>
+          </a>
+          <a href="#waitlist-box" className="nav-cta">
+            Join the waitlist
+          </a>
+        </header>
 
-          <div className="pillars-grid">
-            <div className="pillar-card scroll-reveal stagger-1" id="pillar-vault">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <FileText size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">Digital Vault for Wills & Directives</h3>
-              <p className="pillar-desc">
-                Securely upload, preview, download, and continuously update your will, testimonies, deeds, and health directives in one clean place.
+        <main className="main-content" id="main-content">
+          {/* Hero */}
+          <section className="hero-section" id="hero-section">
+            <div className="hero-copy">
+              <span className="section-tag rise" style={{ '--i': 0 } as React.CSSProperties}>Private alpha · Opening soon</span>
+              <h1 className="hero-title rise" style={{ '--i': 1 } as React.CSSProperties} id="main-heading">
+                <span>Life</span>
+                <span>Stored.</span>
+              </h1>
+              <p className="hero-lead rise" style={{ '--i': 2 } as React.CSSProperties}>
+                A digital vault for wills and testimony documents.
               </p>
-            </div>
-
-            <div className="pillar-card scroll-reveal stagger-2" id="pillar-executors">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <Users size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">Trusted Executors & Verified Release</h3>
-              <p className="pillar-desc">
-                Assign designated contacts as executors. A secure verification protocol triggers document handover only to authorized parties.
+              <p className="hero-subtitle rise" style={{ '--i': 3 } as React.CSSProperties}>
+                Keep your will, deeds and vital records in one encrypted place, name the people you trust, and know your family
+                will get exactly what they need, when they need it.
               </p>
-            </div>
 
-            <div className="pillar-card scroll-reveal stagger-3" id="pillar-scanner">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <ScanLine size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">On-Device Private AI Scanner</h3>
-              <p className="pillar-desc">
-                Scan and organize legal documents with local AI that runs entirely on your device. Zero document data leaks to external cloud APIs.
-              </p>
-            </div>
-
-            <div className="pillar-card scroll-reveal stagger-4" id="pillar-audit">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <Hourglass size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">Document History & Audit Logs</h3>
-              <p className="pillar-desc">
-                Immutable timestamps and full version history preserve legal provenance so document authenticity is always clear and indisputable.
-              </p>
-            </div>
-
-            <div className="pillar-card scroll-reveal stagger-5" id="pillar-subscriptions">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <BellRing size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">Subscription & Account Notifier</h3>
-              <p className="pillar-desc">
-                Catalog ongoing memberships, accounts, and subscriptions so executors can promptly notify providers and cancel posthumous billing.
-              </p>
-            </div>
-
-            <div className="pillar-card scroll-reveal stagger-6" id="pillar-security">
-              <div className="pillar-icon-box" aria-hidden="true">
-                <ShieldCheck size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="pillar-title">Bank-Grade Encryption & Compliance</h3>
-              <p className="pillar-desc">
-                AES-256 encryption in transit and at rest, MFA recovery, strict GDPR compliance, and role-based access for complete peace of mind.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Minimal FAQ Section */}
-        <section className="faq-section" id="faq-section">
-          <div className="section-header scroll-reveal">
-            <span className="section-tag">Common Questions</span>
-            <h2 className="section-title">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="faq-list">
-            {faqs.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-              return (
-                <div key={index} className={`faq-item ${isOpen ? 'active' : ''}`} id={`faq-item-${index}`}>
-                  <button
-                    type="button"
-                    className="faq-trigger"
-                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-answer-wrapper-${index}`}
-                    id={`faq-trigger-${index}`}
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      size={18}
-                      className={`faq-icon ${isOpen ? 'open' : ''}`}
+              {/* Waitlist */}
+              <div className="waitlist-container rise" style={{ '--i': 4 } as React.CSSProperties} id="waitlist-box">
+                {!joinedWaitlist ? (
+                  <form className="waitlist-form" onSubmit={handleWaitlistSubmit} id="waitlist-form">
+                    <input
+                      type="email"
+                      id="email-input"
+                      className="waitlist-input"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      aria-label="Email address for waitlist"
                     />
-                  </button>
-                  <div
-                    id={`faq-answer-wrapper-${index}`}
-                    className={`faq-collapse-wrapper ${isOpen ? 'open' : ''}`}
-                    role="region"
-                    aria-labelledby={`faq-trigger-${index}`}
-                  >
-                    <div className="faq-collapse-inner">
-                      <div className="faq-answer">
-                        {faq.a}
+                    <button type="submit" id="waitlist-submit-button" className="waitlist-submit-btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <span>Joining…</span>
+                      ) : (
+                        <>
+                          <span>Join the waitlist</span>
+                          <ArrowRight size={16} className="btn-arrow-icon" strokeWidth={2.4} />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="waitlist-success-card" id="waitlist-success-view">
+                    <div className="success-icon-badge">
+                      <Check size={20} strokeWidth={2.8} />
+                    </div>
+                    <h3 className="success-title">You&apos;re on the list</h3>
+                    <p className="success-desc">
+                      Welcome, <strong>{email}</strong>. You hold spot <span className="waitlist-number-chip">#{waitlistNumber}</span> for
+                      the private release.
+                    </p>
+                    <div className="referral-share-box">
+                      <span className="referral-link-text">lifestored.com/?ref=VIP-{waitlistNumber}</span>
+                      <button id="copy-invite-link-button" type="button" className="share-copy-btn" onClick={handleCopyLink}>
+                        {copiedLink ? <Check size={14} strokeWidth={2.4} /> : <Copy size={14} />}
+                        <span>{copiedLink ? 'Copied' : 'Copy link'}</span>
+                      </button>
+                    </div>
+                    <button type="button" id="reset-waitlist-demo-button" className="reset-waitlist-btn" onClick={handleResetWaitlist}>
+                      Change email
+                    </button>
+                  </div>
+                )}
+
+                <p className="waitlist-note" id="social-proof-bar">
+                  <strong>Free to join.</strong> Be one of the first to try LifeStored when the private alpha opens.
+                </p>
+              </div>
+            </div>
+
+            <div className="hero-visual rise" style={{ '--i': 3 } as React.CSSProperties}>
+              <img src="/images/slide1-documents.png" alt="" className="hero-doodle" aria-hidden="true" />
+              <div className="phone">
+                <img src="/images/app/app-vault.jpg" alt="The LifeStored vault on a phone: documents, renewals and search" className="phone-screen" />
+              </div>
+            </div>
+          </section>
+
+          {/* Three steps, like the app's welcome */}
+          <section className="steps-section" id="how-it-works">
+            {steps.map((step, i) => (
+              <div key={step.word1} className={`step-card scroll-reveal stagger-${i + 1}`}>
+                <img src={step.img} alt="" className="step-img" aria-hidden="true" />
+                <h3 className="step-title">
+                  <span>{step.word1}</span>
+                  <span>{step.word2}</span>
+                </h3>
+                <p className="step-text">{step.text}</p>
+              </div>
+            ))}
+          </section>
+
+          {/* Features */}
+          <section className="pillars-section" id="pillars-section">
+            <div className="section-header scroll-reveal">
+              <span className="section-tag">Key features</span>
+              <h2 className="section-title">Built for a lifetime of clarity, and a calm handover.</h2>
+            </div>
+
+            <div className="pillars-grid">
+              {[
+                { id: 'pillar-vault', icon: FileText, title: 'A vault for wills and directives', text: 'Upload, preview, download and keep your will, testimonies, deeds and health directives up to date in one clean place.' },
+                { id: 'pillar-executors', icon: Users, title: 'Trusted executors, verified release', text: 'Name the people you trust. Documents are only released after a death certificate, an optional co-signer, and a window for you to cancel.' },
+                { id: 'pillar-scanner', icon: ScanLine, title: 'A scanner that reads on your phone', text: 'Point your camera at a page and get a crisp, flattened scan. Titles and key details are read on your device.' },
+                { id: 'pillar-audit', icon: Hourglass, title: 'A full history of every view', text: 'Every view, download, share and change is recorded with who did it and when, so nothing happens behind your back.' },
+                { id: 'pillar-subscriptions', icon: BellRing, title: 'Renewals you won’t miss', text: 'Expiry and renewal dates are pulled from your documents and flagged before they’re due.' },
+                { id: 'pillar-security', icon: ShieldCheck, title: 'Bank-grade encryption', text: 'Every file is sealed with AES-256 and its own key, travels over HTTPS, and is checked for tampering every time it opens.' },
+              ].map((f, i) => {
+                const Icon = f.icon;
+                return (
+                  <div key={f.id} className={`pillar-card scroll-reveal stagger-${i + 1}`} id={f.id}>
+                    <div className="pillar-icon-box" aria-hidden="true">
+                      <Icon size={20} strokeWidth={1.9} />
+                    </div>
+                    <h3 className="pillar-title">{f.title}</h3>
+                    <p className="pillar-desc">{f.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* The app itself */}
+          <section className="showcase-section" id="showcase">
+            <div className="section-header scroll-reveal">
+              <span className="section-tag">Inside the app</span>
+              <h2 className="section-title">Designed to feel calm, simple and safe.</h2>
+            </div>
+            <div className="showcase-grid">
+              {showcase.map((s, i) => (
+                <figure key={s.img} className={`showcase-item scroll-reveal stagger-${i + 1}`}>
+                  <div className="phone phone-sm">
+                    <img src={s.img} alt={s.title} className="phone-screen" loading="lazy" />
+                  </div>
+                  <figcaption>
+                    <h3 className="showcase-title">{s.title}</h3>
+                    <p className="showcase-text">{s.text}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section className="faq-section" id="faq-section">
+            <div className="section-header scroll-reveal">
+              <span className="section-tag">Common questions</span>
+              <h2 className="section-title">Frequently asked questions</h2>
+            </div>
+
+            <div className="faq-list">
+              {faqs.map((faq, index) => {
+                const isOpen = openFaqIndex === index;
+                return (
+                  <div key={index} className={`faq-item ${isOpen ? 'active' : ''}`} id={`faq-item-${index}`}>
+                    <button
+                      type="button"
+                      className="faq-trigger"
+                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-wrapper-${index}`}
+                      id={`faq-trigger-${index}`}
+                    >
+                      <span>{faq.q}</span>
+                      <span className={`faq-icon ${isOpen ? 'open' : ''}`}>
+                        <ChevronDown size={18} />
+                      </span>
+                    </button>
+                    <div
+                      id={`faq-answer-wrapper-${index}`}
+                      className={`faq-collapse-wrapper ${isOpen ? 'open' : ''}`}
+                      role="region"
+                      aria-labelledby={`faq-trigger-${index}`}
+                    >
+                      <div className="faq-collapse-inner">
+                        <div className="faq-answer">{faq.a}</div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Pre-Footer Inquiry Form */}
-        <section className="inquiry-section" id="inquiry-section">
-          <div className="inquiry-grid">
-            <div className="inquiry-left">
-              <h2 className="inquiry-title">Ready To Safeguard What Matters?</h2>
-              <p className="inquiry-desc">
-                Our service is for people who believe in owning a safe, clean, and organized space for life&apos;s essential records. Reach out and our team will help you prepare for tomorrow.
-              </p>
+                );
+              })}
             </div>
+          </section>
 
-            <div className="inquiry-right">
-              {!inquirySubmitted ? (
-                <form className="inquiry-form" onSubmit={handleInquirySubmit} id="inquiry-form">
-                  <div className="inquiry-row-split">
-                    <input
-                      type="text"
-                      className="inquiry-underline-input"
-                      placeholder="Name"
-                      value={inquiryName}
-                      onChange={(e) => setInquiryName(e.target.value)}
-                      aria-label="Name"
-                    />
-                    <input
-                      type="email"
-                      className="inquiry-underline-input"
-                      placeholder="Email"
-                      value={inquiryEmail}
-                      onChange={(e) => setInquiryEmail(e.target.value)}
-                      required
-                      aria-label="Email"
-                    />
-                  </div>
+          {/* Enquiry */}
+          <section className="inquiry-section" id="inquiry-section">
+            <div className="inquiry-grid">
+              <div className="inquiry-left">
+                <h2 className="inquiry-title">
+                  <span>Ready to keep</span>
+                  <span>what matters safe?</span>
+                </h2>
+                <p className="inquiry-desc">
+                  For people who want one safe, clean and organised place for life&apos;s essential records. Tell us a little about you
+                  and we&apos;ll be in touch.
+                </p>
+              </div>
 
-                  <input
-                    type="tel"
-                    className="inquiry-underline-input"
-                    placeholder="Phone Number"
-                    value={inquiryPhone}
-                    onChange={(e) => setInquiryPhone(e.target.value)}
-                    aria-label="Phone Number"
-                  />
-
-                  <input
-                    type="text"
-                    className="inquiry-underline-input"
-                    placeholder="Anything we should know?"
-                    value={inquiryNotes}
-                    onChange={(e) => setInquiryNotes(e.target.value)}
-                    aria-label="Anything we should know"
-                  />
-
-                  <div className="inquiry-submit-wrapper">
-                    <button
-                      type="submit"
-                      id="inquiry-submit-button"
-                      className="inquiry-submit-btn"
-                      disabled={isInquirySubmitting}
-                    >
-                      {isInquirySubmitting ? 'Sending...' : 'Submit'}
+              <div className="inquiry-right">
+                {!inquirySubmitted ? (
+                  <form className="inquiry-form" onSubmit={handleInquirySubmit} id="inquiry-form">
+                    <div className="inquiry-row-split">
+                      <input type="text" className="field" placeholder="Name" value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} aria-label="Name" />
+                      <input type="email" className="field" placeholder="Email" value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} required aria-label="Email" />
+                    </div>
+                    <input type="tel" className="field" placeholder="Phone number" value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} aria-label="Phone number" />
+                    <input type="text" className="field" placeholder="Anything we should know?" value={inquiryNotes} onChange={(e) => setInquiryNotes(e.target.value)} aria-label="Anything we should know" />
+                    <button type="submit" id="inquiry-submit-button" className="inquiry-submit-btn" disabled={isInquirySubmitting}>
+                      {isInquirySubmitting ? 'Sending…' : 'Send'}
                     </button>
+                  </form>
+                ) : (
+                  <div className="inquiry-success-box" id="inquiry-success-view">
+                    <h4 className="inquiry-success-title">Message received</h4>
+                    <p className="inquiry-success-desc">
+                      Thank you, {inquiryName || inquiryEmail}. Our team has your note and will be in touch soon.
+                    </p>
                   </div>
-                </form>
-              ) : (
-                <div className="inquiry-success-box" id="inquiry-success-view">
-                  <h4 className="inquiry-success-title">Message Received</h4>
-                  <p className="inquiry-success-desc">
-                    Thank you, {inquiryName || inquiryEmail}. Our team has received your note and will be in touch soon.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        </section>
-
+          </section>
         </main>
       </div>
 
-      {/* Edge-to-Edge Full Width Footer with Waving Dots (No Side Margins, No White Space Below) */}
-      <footer className="edge-to-edge-footer" id="site-footer">
-        <WavingDotsFooter />
-      </footer>
+      <GradientFooter />
     </>
   );
 }

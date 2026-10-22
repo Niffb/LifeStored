@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'LifeStored — Secure Digital Legacy & Vital Vault',
-  description: 'Preserve what matters most. LifeStored is the tranquil, zero-knowledge encrypted sanctuary for your vital records, cherished memories, and legacy directives.',
+  description: 'Preserve what matters most. LifeStored is a calm, encrypted vault for your will, vital records and wishes, handed over safely to the people you trust.',
   keywords: ['digital legacy', 'vault', 'document storage', 'memory capsule', 'zero knowledge', 'life stored', 'estate planning'],
   authors: [{ name: 'LifeStored' }],
   openGraph: {
@@ -29,8 +29,6 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <body>
-        <div className="ambient-circle-1" aria-hidden="true" />
-        <div className="subtle-grid" aria-hidden="true" />
         {children}
       </body>
     </html>
